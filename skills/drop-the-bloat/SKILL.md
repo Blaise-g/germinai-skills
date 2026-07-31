@@ -1,0 +1,143 @@
+---
+name: drop-the-bloat
+description: One-shot audit of persistent Claude Code or Codex context, with approval-gated reversible cleanup.
+---
+
+# Drop the Bloat
+
+Run a one-shot audit of the user's coding-agent harness. Keep capabilities that
+earn their cost. Finish after one like-for-like remeasurement.
+
+## Guardrails
+
+- Keep the audit read-only until the user approves exact changes.
+- Base recommendations on observed loading behavior and capability value, not
+  size alone.
+- Distinguish content loaded at session start from metadata, deferred content,
+  and tools loaded only when invoked.
+- Treat token counts as measurements only when the harness exposes them. Label
+  estimates and unavailable measurements honestly.
+- Keep security, permission, sandbox, authentication, provider, and policy
+  settings outside the audit unless the user explicitly puts them in scope.
+- Protect unrelated working-tree changes and machine configuration.
+- Prefer reversible edits. Show the target, current value, proposed value,
+  capability loss, and rollback before applying anything.
+- Treat compaction thresholds and hooks as advanced tuning outside the baseline
+  cleanup unless the user explicitly requests them.
+
+## Select the audit
+
+Identify the current harness and requested scope:
+
+- For Claude Code, read [the Claude Code reference](references/claude-code.md).
+- For Codex, read [the Codex reference](references/codex.md).
+- For both, read both references. Audit live state only where access is
+  available; request fresh-session output from the other harness rather than
+  pretending to observe it.
+
+Default to the current harness and both user-level and project-level surfaces.
+If expanding beyond that scope would require access the user has not granted,
+report the boundary and continue with what is available.
+
+Selection is complete when the harness, scope, accessible surfaces, and any
+access boundaries are explicit.
+
+## Audit workflow
+
+### 1. Establish a baseline
+
+Record:
+
+- harness and version;
+- user-level, project-level, or combined scope;
+- fresh-session starting context or remaining capacity when available;
+- how the measurement was obtained;
+- anything the harness does not expose.
+
+The baseline is complete when every field is recorded or explicitly marked
+unavailable. Continue with unavailable measurements labeled as such.
+
+### 2. Inventory persistent surfaces
+
+Inspect only relevant, readable configuration:
+
+- global and project instruction files;
+- installed skill names and descriptions;
+- MCP servers, apps, plugins, and exposed tools;
+- hooks, workflows, artifacts, and other harness features;
+- duplicated rules or procedures that could load on demand;
+- large plans or specifications embedded in always-on instructions.
+
+For each surface, establish whether it is always loaded, represented only by
+metadata, deferred until invocation, or not model-visible.
+
+The inventory is complete when every readable surface in the agreed scope has
+a loading classification and every inaccessible surface is recorded.
+
+### 3. Classify each candidate
+
+Use one of these recommendations:
+
+- **Keep:** repeatedly useful or required for safety and correctness.
+- **Load on demand:** valuable, but unnecessary in every session.
+- **Disable:** currently unused and easy to restore.
+- **Remove:** obsolete or duplicated, with a clear surviving source.
+- **Unknown:** context impact or capability cost is not established.
+
+Propose a cut only when the likely context benefit and capability cost are both
+visible. Classification is complete when every inventoried surface has exactly
+one recommendation, supporting evidence, and a capability cost or explicit
+unknown.
+
+### 4. Present the audit
+
+Use this shape:
+
+```markdown
+## Baseline
+- Harness:
+- Scope:
+- Starting context:
+- Measurement:
+
+## Findings
+| Surface | Location | Loading behavior | Recommendation | Evidence | Capability cost |
+| --- | --- | --- | --- | --- | --- |
+
+## Proposed changes
+1. Exact target and current value
+   - Proposed value:
+   - Expected context effect:
+   - Capability lost:
+   - Rollback:
+
+## Keep as-is
+- Useful surfaces that already earn their cost.
+
+## Unknowns
+- Items that need measurement or owner knowledge.
+```
+
+Stop and ask for approval of the numbered changes. Approval of one item does not
+authorize the others.
+
+### 5. Apply only approved changes
+
+For each approved item:
+
+1. Re-read the current target so the patch is based on fresh state.
+2. Preserve unrelated settings and formatting.
+3. Make the smallest reversible change.
+4. Show the resulting diff or before/after value.
+5. Stop if the target changed since the audit or the capability cost expanded.
+
+Application is complete when every approved item is recorded as applied,
+skipped, or blocked, with the resulting state shown for each applied item.
+
+### 6. Re-measure once
+
+Start a fresh session when practical and repeat the original measurement.
+Report the before/after result and any capability regression. Offer the
+documented rollback for anything whose absence hurts and apply it after
+approval. Finish after this single comparison; another audit requires a new
+user request.

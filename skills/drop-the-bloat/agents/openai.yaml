@@ -1,0 +1,6 @@
+interface:
+  display_name: "Drop the Bloat"
+  short_description: "Audit and trim coding-agent context safely"
+  default_prompt: "Use $drop-the-bloat to audit my coding-agent context and propose one-shot cleanup changes."
+policy:
+  allow_implicit_invocation: false
