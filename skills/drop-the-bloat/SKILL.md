@@ -15,10 +15,14 @@ earn their cost. Finish after one like-for-like remeasurement.
   size alone.
 - Distinguish content loaded at session start from metadata, deferred content,
   and tools loaded only when invoked.
-- Treat token counts as measurements only when the harness exposes them. Label
-  estimates and unavailable measurements honestly.
-- Keep security, permission, sandbox, authentication, provider, and policy
-  settings outside the audit unless the user explicitly puts them in scope.
+- Quote as savings only the gain metric: a like-for-like fresh-session total
+  reported by the harness itself. Label everything else — diagnostic rankings,
+  estimates, unavailable measurements — as what it is.
+- Context-removal denies are in scope: a bare tool name in a deny list, whose
+  documented effect is removing the tool's definition from the prompt, shapes
+  context. Access control — scoped permission rules, sandbox, authentication,
+  provider, and policy settings — stays outside the audit unless the user
+  explicitly puts it in scope.
 - Protect unrelated working-tree changes and machine configuration.
 - Prefer reversible edits. Show the target, current value, proposed value,
   capability loss, and rollback before applying anything.
@@ -42,6 +46,22 @@ report the boundary and continue with what is available.
 Selection is complete when the harness, scope, accessible surfaces, and any
 access boundaries are explicit.
 
+## Set the dial
+
+Ask the user once how aggressive the audit should be:
+
+- **Conservative:** propose only removing obsolete or duplicated surfaces and
+  disabling clearly dead ones.
+- **Balanced:** also propose disabling unused-but-restorable surfaces and
+  converting always-on content to load on demand. The default when the user
+  states no preference.
+- **Aggressive:** also propose cuts with small measured wins and rarely used
+  tools.
+
+The dial widens what gets proposed, never what gets applied: every proposal
+still carries its capability cost, and the per-item approval in step 4 holds
+at every level.
+
 ## Audit workflow
 
 ### 1. Establish a baseline
@@ -50,7 +70,9 @@ Record:
 
 - harness and version;
 - user-level, project-level, or combined scope;
-- fresh-session starting context or remaining capacity when available;
+- the dial level;
+- the gain metric per the harness reference — run it yourself when shell
+  access allows, otherwise ask the user for fresh-session command output;
 - how the measurement was obtained;
 - anything the harness does not expose.
 
@@ -66,7 +88,9 @@ Inspect only relevant, readable configuration:
 - MCP servers, apps, plugins, and exposed tools;
 - hooks, workflows, artifacts, and other harness features;
 - duplicated rules or procedures that could load on demand;
-- large plans or specifications embedded in always-on instructions.
+- large plans or specifications embedded in always-on instructions;
+- the harness reference's diagnostic ranking, where one exists, to surface the
+  largest tool payloads.
 
 For each surface, establish whether it is always loaded, represented only by
 metadata, deferred until invocation, or not model-visible.
@@ -84,10 +108,10 @@ Use one of these recommendations:
 - **Remove:** obsolete or duplicated, with a clear surviving source.
 - **Unknown:** context impact or capability cost is not established.
 
-Propose a cut only when the likely context benefit and capability cost are both
-visible. Classification is complete when every inventoried surface has exactly
-one recommendation, supporting evidence, and a capability cost or explicit
-unknown.
+Propose a cut only when the dial admits it and the likely context benefit and
+capability cost are both visible. Classification is complete when every
+inventoried surface has exactly one recommendation, supporting evidence, and a
+capability cost or explicit unknown.
 
 ### 4. Present the audit
 
@@ -97,6 +121,7 @@ Use this shape:
 ## Baseline
 - Harness:
 - Scope:
+- Dial:
 - Starting context:
 - Measurement:
 
@@ -136,8 +161,8 @@ skipped, or blocked, with the resulting state shown for each applied item.
 
 ### 6. Re-measure once
 
-Start a fresh session when practical and repeat the original measurement.
-Report the before/after result and any capability regression. Offer the
-documented rollback for anything whose absence hurts and apply it after
-approval. Finish after this single comparison; another audit requires a new
-user request.
+Repeat the original gain metric measurement like-for-like, in a fresh session
+when practical. Report the before/after result and any capability regression.
+Offer the documented rollback for anything whose absence hurts and apply it
+after approval. Finish after this single comparison; another audit requires a
+new user request.

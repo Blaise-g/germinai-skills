@@ -2,14 +2,19 @@
 
 Use current Codex behavior where it differs from this reference.
 
-## Baseline
+## Gain metric
 
-- Start a fresh chat and run `/status`.
-- Record the active model, context capacity, remaining context, and any other
-  usage information the current surface exposes.
-- If a richer context breakdown is available, use it. Otherwise state that
-  `/status` measures remaining capacity rather than attributing every starting
-  token to a source.
+- With shell access, measure yourself: run `codex exec --json --ephemeral
+  "hi"` and read `usage.input_tokens` and `usage.cached_input_tokens` from the
+  `turn.completed` event. Run it twice; the total is stable when consecutive
+  runs match.
+- Without shell access, ask the user to start a fresh chat and run `/status`.
+  Record the active model, context capacity, and remaining context, and state
+  that `/status` measures remaining capacity rather than attributing every
+  starting token to a source.
+- Codex has no verified per-tool diagnostic ranking. The `openai_base_url`
+  config key exists, but its behavior under ChatGPT-plan login is
+  undocumented — treat a proxy through it as an unknown, not an instrument.
 
 ## Inspect
 
