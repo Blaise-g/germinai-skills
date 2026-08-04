@@ -6,8 +6,7 @@ Use current Claude Code behavior where it differs from this reference.
 
 - With shell access, measure yourself: run `claude -p "hi" --output-format
   json` and sum `input_tokens + cache_creation_input_tokens +
-  cache_read_input_tokens` from the `result` event. Run it twice; the total is
-  stable when consecutive runs match.
+  cache_read_input_tokens` from the `result` event.
 - Run from the project directory for combined scope, or from an empty
   directory for user-level scope only.
 - Without shell access, ask the user to open a fresh session, run
@@ -26,7 +25,6 @@ Use current Claude Code behavior where it differs from this reference.
   so every schema loads in full. Cross-check each large entry against the
   deferred tool list of a normal session — a deferred tool costs only its
   name.
-- Use the ranking to find candidates; quote savings only from the gain metric.
 
 ## Inspect
 

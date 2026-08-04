@@ -19,16 +19,16 @@ conditions. The only number quoted as savings.
 _Avoid_: proxy numbers as savings, estimates presented as measurements
 
 **Diagnostic ranking**:
-Per-tool worst-case sizing from a local logging proxy (Claude Code only, v1).
-Finds candidates; never quoted as savings, because routing through a base URL
-disables tool search and inflates deferred tools to full-schema cost.
+Per-tool worst-case sizing from the bundled logging proxy (both harnesses).
+Finds candidates; never quoted as savings — on Claude Code, routing through a
+base URL disables tool search and inflates deferred tools to full-schema cost.
 _Avoid_: precise per-tool cost
 
 **Context-removal deny**:
 A bare tool name in `permissions.deny`, whose documented effect is removing
 the tool's definition from the prompt. In audit scope: it is context shaping,
-not access control. Scoped rules (e.g. `Bash(rm *)`) are access control and
-permanently out of scope.
+not access control. Scoped rules are access control and permanently out of
+scope.
 _Avoid_: permission change (overloaded — names both kinds)
 
 **Approval gate**:

@@ -72,7 +72,8 @@ Record:
 - user-level, project-level, or combined scope;
 - the dial level;
 - the gain metric per the harness reference — run it yourself when shell
-  access allows, otherwise ask the user for fresh-session command output;
+  access allows (twice; it is stable when consecutive runs match), otherwise
+  ask the user for fresh-session command output;
 - how the measurement was obtained;
 - anything the harness does not expose.
 
