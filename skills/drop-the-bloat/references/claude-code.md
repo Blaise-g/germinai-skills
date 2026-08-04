@@ -2,14 +2,29 @@
 
 Use current Claude Code behavior where it differs from this reference.
 
-## Baseline
+## Gain metric
 
-- Ask the user to open a fresh session and run `/context all`. If the agent
-  cannot invoke the slash command, ask the user to paste or attach its output.
-- Record the per-item breakdown and total. Do not treat an in-progress
-  conversation as starting context.
-- If the command or a category is unavailable in the installed version, record
-  that limitation and continue without inventing a number.
+- With shell access, measure yourself: run `claude -p "hi" --output-format
+  json` and sum `input_tokens + cache_creation_input_tokens +
+  cache_read_input_tokens` from the `result` event.
+- Run from the project directory for combined scope, or from an empty
+  directory for user-level scope only.
+- Without shell access, ask the user to open a fresh session, run
+  `/context all`, and paste or attach its output. An in-progress conversation
+  is not starting context.
+- If a measurement or category is unavailable in the installed version, record
+  the limitation and continue without inventing a number.
+
+## Diagnostic ranking
+
+- Start the bundled proxy from the skill directory: `node scripts/proxy.mjs`.
+  Send one probe through it: `ANTHROPIC_BASE_URL=http://localhost:8787 claude
+  -p "hi"`. Stop the proxy afterwards; it is read-only and leaves only its
+  terminal output.
+- The ranking is worst-case: a non-Anthropic base URL turns tool search off,
+  so every schema loads in full. Cross-check each large entry against the
+  deferred tool list of a normal session — a deferred tool costs only its
+  name.
 
 ## Inspect
 
@@ -18,13 +33,25 @@ Use current Claude Code behavior where it differs from this reference.
 - Skills: `~/.claude/skills/`, project `.claude/skills/`, and any nested skills
   relevant to the working directory.
 - MCP: run `/mcp` and inspect configured servers. Account for deferred tool
-  schemas; do not assume every installed schema is preloaded.
+  schemas; not every installed schema is preloaded.
 - Settings: inspect applicable `settings.json` and `settings.local.json` layers
   without exposing secrets.
 - Configuration UI: run `/config`, open **Config**, and inspect `Artifacts` and
   `Dynamic workflows`. Recommend `false` only when the user rarely uses them.
 - Hooks and other features: establish whether they add model-visible context
   before treating them as bloat.
+
+## Cut surfaces
+
+- Context-removal deny: a bare tool name in `permissions.deny` removes that
+  tool's definition from context entirely (e.g. `"NotebookEdit"`). A scoped
+  rule such as `Bash(rm *)` is access control and stays out of scope.
+- Feature flags in `settings.json`: `disableClaudeAiConnectors`, artifact,
+  workflow, and bundled-skill toggles, and `skillOverrides` (`off` or
+  `user-invocable-only`). Verify each key against the current settings
+  documentation before proposing it; keys shift across versions.
+- MCP servers blocked only by tool-level deny rules still connect and load
+  their metadata. Prefer server-level disables so nothing enters context.
 
 ## Product-specific choices
 
@@ -37,7 +64,8 @@ Use current Claude Code behavior where it differs from this reference.
 
 ## Re-measure
 
-- Ask the user to open another fresh session and run `/context all` again.
+- Repeat the same gain metric from the same directory, or ask the user for a
+  fresh-session `/context all` when that was the baseline method.
 - Compare the per-item breakdown and total with the baseline from the same
   surface and version.
 
@@ -54,5 +82,5 @@ in the main session.
 - Skills: <https://code.claude.com/docs/en/skills>
 - MCP: <https://code.claude.com/docs/en/mcp>
 - Settings: <https://code.claude.com/docs/en/settings>
+- Permissions: <https://code.claude.com/docs/en/permissions>
 - Hooks: <https://code.claude.com/docs/en/hooks>
-- Skill invocation and overrides: <https://code.claude.com/docs/en/skills>

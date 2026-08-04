@@ -5,8 +5,19 @@ Portable Agent Skills by Lorenzo Germini, accompanying `germinai` articles.
 ## Drop the Bloat
 
 `drop-the-bloat` runs a one-shot audit of persistent Claude Code or Codex
-context. It proposes reversible changes, waits for explicit approval, applies
-only approved items, and re-measures once.
+context. It measures a fresh-session baseline itself where it has shell access
+(headless `claude -p` or `codex exec --json`; `/context all` and `/status`
+otherwise), asks once how aggressive to be — conservative, balanced, or
+aggressive, a dial that only widens what gets proposed — then proposes
+reversible changes, waits for explicit approval on each item, applies only
+approved items, and re-measures once.
+
+A bundled logging proxy (`scripts/proxy.mjs`) ranks per-tool payload sizes to
+find candidates in both harnesses — via `ANTHROPIC_BASE_URL` on Claude Code
+and `openai_base_url` in an isolated `CODEX_HOME` on Codex. The ranking is
+worst-case diagnostic evidence (on Claude Code, routing through a base URL
+disables tool search) and is never quoted as savings; only the like-for-like
+headless total is.
 
 Run it once without installing:
 

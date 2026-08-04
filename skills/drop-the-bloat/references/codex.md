@@ -2,14 +2,36 @@
 
 Use current Codex behavior where it differs from this reference.
 
-## Baseline
+## Gain metric
 
-- Start a fresh chat and run `/status`.
-- Record the active model, context capacity, remaining context, and any other
-  usage information the current surface exposes.
-- If a richer context breakdown is available, use it. Otherwise state that
-  `/status` measures remaining capacity rather than attributing every starting
-  token to a source.
+- With shell access, measure yourself: run `codex exec --json --ephemeral
+  "hi"` and read `usage.input_tokens` and `usage.cached_input_tokens` from the
+  `turn.completed` event.
+- Without shell access, ask the user to start a fresh chat and run `/status`.
+  Record the active model, context capacity, and remaining context, and state
+  that `/status` measures remaining capacity rather than attributing every
+  starting token to a source.
+
+## Diagnostic ranking
+
+- Verified under ChatGPT-plan login: `openai_base_url` reroutes Codex traffic,
+  so the bundled proxy captures and ranks the full request. Use an isolated
+  `CODEX_HOME` so real configuration stays untouched:
+  1. Create a temp directory, copy `~/.codex/auth.json` into it, and write a
+     `config.toml` containing only
+     `openai_base_url = "http://localhost:8788/v1"`.
+  2. From the skill directory:
+     `PORT=8788 UPSTREAM=https://api.openai.com node scripts/proxy.mjs`.
+  3. Probe: `CODEX_HOME=<temp dir> codex exec --json --skip-git-repo-check
+     "hi"`.
+  4. Read the ranked table from the proxy output, stop the proxy, and delete
+     the temp directory.
+- The probe turn fails after capture — ChatGPT tokens lack the
+  `api.responses.write` scope at `api.openai.com`, and Codex retries a few
+  times before giving up. The ranking is already captured on the first POST.
+- Codex packs tool schemas in an `additional_tools` input item and the system
+  prompt in developer messages, with zstd-compressed bodies; the proxy
+  accounts for all three.
 
 ## Inspect
 
