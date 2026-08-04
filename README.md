@@ -14,10 +14,11 @@ approved items, and re-measures once.
 
 A bundled logging proxy (`scripts/proxy.mjs`) ranks per-tool payload sizes to
 find candidates in both harnesses — via `ANTHROPIC_BASE_URL` on Claude Code
-and `openai_base_url` in an isolated `CODEX_HOME` on Codex. The ranking is
-worst-case diagnostic evidence (on Claude Code, routing through a base URL
-disables tool search) and is never quoted as savings; only the like-for-like
-headless total is.
+and an HTTP-only custom provider in an isolated `CODEX_HOME` on Codex. The
+ranking is worst-case diagnostic evidence (on Claude Code, routing through a
+base URL disables tool search) and is never quoted as savings; only the
+like-for-like headless total is. The proxy binds to loopback by default so
+authenticated diagnostic traffic is not exposed on the local network.
 
 Run it once without installing:
 

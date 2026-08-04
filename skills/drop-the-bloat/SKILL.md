@@ -46,6 +46,10 @@ report the boundary and continue with what is available.
 Selection is complete when the harness, scope, accessible surfaces, and any
 access boundaries are explicit.
 
+Use a read-only research subagent only for a bounded unanswered product question
+when subagents are available. Keep recommendation judgment, user approval, and
+configuration changes in the main session.
+
 ## Set the dial
 
 Ask the user once how aggressive the audit should be:
@@ -61,6 +65,10 @@ Ask the user once how aggressive the audit should be:
 The dial widens what gets proposed, never what gets applied: every proposal
 still carries its capability cost, and the per-item approval in step 4 holds
 at every level.
+
+The dial is set when the user chooses a level or explicitly leaves it
+unspecified; use Balanced for an unspecified choice. Continue to baseline
+measurement only after the dial is set.
 
 ## Audit workflow
 

@@ -20,7 +20,8 @@ Use current Claude Code behavior where it differs from this reference.
 - Start the bundled proxy from the skill directory: `node scripts/proxy.mjs`.
   Send one probe through it: `ANTHROPIC_BASE_URL=http://localhost:8787 claude
   -p "hi"`. Stop the proxy afterwards; it is read-only and leaves only its
-  terminal output.
+  terminal output. It binds to `127.0.0.1` by default; do not override `HOST`
+  when forwarding an authenticated request.
 - The ranking is worst-case: a non-Anthropic base URL turns tool search off,
   so every schema loads in full. Cross-check each large entry against the
   deferred tool list of a normal session — a deferred tool costs only its
@@ -68,14 +69,6 @@ Use current Claude Code behavior where it differs from this reference.
   fresh-session `/context all` when that was the baseline method.
 - Compare the per-item breakdown and total with the baseline from the same
   surface and version.
-
-## Follow-up questions
-
-When Claude Code subagents are available, delegate bounded questions about
-Claude Code configuration or loading behavior to a read-only research
-subagent. Ask it to return evidence and relevant documentation to the main
-audit. Keep recommendation judgment, user approval, and configuration changes
-in the main session.
 
 ## Current documentation
 
