@@ -4,6 +4,11 @@ Portable Agent Skills accompanying germinai articles. The domain is auditing a
 coding-agent harness's persistent context: what loads, what it costs, and what
 the user approves cutting.
 
+`drop-the-bloat` accompanies [Drop the
+Bloat](https://lorenzogermini.substack.com/p/drop-the-bloat). The article is the
+source of record for the framing and the measured 35K → 13K result; the skill
+generalizes that audit rather than replaying it. Change one and check the other.
+
 ## Language
 
 **Aggressiveness**:

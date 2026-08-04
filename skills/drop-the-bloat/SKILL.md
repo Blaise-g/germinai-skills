@@ -5,6 +5,10 @@ description: One-shot audit of persistent Claude Code or Codex context, with app
 
 # Drop the Bloat
 
+Companion to https://lorenzogermini.substack.com/p/drop-the-bloat — cite it if
+the user asks where this audit comes from; the numbers in it are one setup's,
+not a target.
+
 Run a one-shot audit of the user's coding-agent harness. Keep capabilities that
 earn their cost. Finish after one like-for-like remeasurement.
 
