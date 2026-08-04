@@ -4,8 +4,8 @@
 // Claude Code:  node proxy.mjs
 //               ANTHROPIC_BASE_URL=http://localhost:8787 claude -p "hi"
 // Codex:        PORT=8788 UPSTREAM=https://api.openai.com node proxy.mjs
-//               with an isolated CODEX_HOME whose config.toml sets
-//               openai_base_url = "http://localhost:8788/v1"
+//               with an isolated CODEX_HOME whose custom model provider points
+//               at http://127.0.0.1:8788/v1 and sets supports_websockets=false
 //               (zstd decode requires Node >= 22.15)
 //
 // The ranking is worst-case for anything the harness would defer.
@@ -28,12 +28,12 @@ const decode = (buf, enc) => {
 };
 
 const UPSTREAM = process.env.UPSTREAM ?? "https://api.anthropic.com";
+const HOST = process.env.HOST ?? "127.0.0.1";
 const PORT = Number(process.env.PORT ?? 8787);
 const bytes = (value) => Buffer.byteLength(JSON.stringify(value));
 const tok = (byteCount) => Math.round(byteCount / 4);
 
-http
-  .createServer(async (req, res) => {
+const server = http.createServer(async (req, res) => {
     try {
       if (req.url === "/ping") return void res.end("pong");
 
@@ -94,5 +94,10 @@ http
       if (!res.headersSent) res.writeHead(502, { "content-type": "application/json" });
       res.end(JSON.stringify({ error: { message: `proxy: ${err.message}` } }));
     }
-  })
-  .listen(PORT, () => console.log(`proxy on http://localhost:${PORT} → ${UPSTREAM}`));
+  });
+
+server.listen(PORT, HOST, () => {
+  const address = server.address();
+  const boundPort = typeof address === "object" && address ? address.port : PORT;
+  console.log(`proxy on http://${HOST}:${boundPort} → ${UPSTREAM}`);
+});

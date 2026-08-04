@@ -14,18 +14,34 @@ Use current Codex behavior where it differs from this reference.
 
 ## Diagnostic ranking
 
-- Verified under ChatGPT-plan login: `openai_base_url` reroutes Codex traffic,
-  so the bundled proxy captures and ranks the full request. Use an isolated
-  `CODEX_HOME` so real configuration stays untouched:
+- Verified under ChatGPT-plan login: a custom provider reroutes Codex traffic
+  and disables its WebSocket transport, so the bundled HTTP proxy captures and
+  ranks the full request. Use an isolated `CODEX_HOME` so real configuration
+  stays untouched:
   1. Create a temp directory, copy `~/.codex/auth.json` into it, and write a
-     `config.toml` containing only
-     `openai_base_url = "http://localhost:8788/v1"`.
+     `config.toml` containing:
+
+     ```toml
+     model_provider = "drop_bloat_proxy"
+
+     [model_providers.drop_bloat_proxy]
+     name = "Drop the Bloat diagnostic proxy"
+     base_url = "http://127.0.0.1:8788/v1"
+     wire_api = "responses"
+     requires_openai_auth = true
+     supports_websockets = false
+     ```
+
+     The explicit `supports_websockets = false` is required because current
+     Codex otherwise upgrades `/v1/responses` and bypasses this HTTP logger.
   2. From the skill directory:
      `PORT=8788 UPSTREAM=https://api.openai.com node scripts/proxy.mjs`.
   3. Probe: `CODEX_HOME=<temp dir> codex exec --json --skip-git-repo-check
      "hi"`.
   4. Read the ranked table from the proxy output, stop the proxy, and delete
      the temp directory.
+- The proxy binds to `127.0.0.1` by default. Do not override `HOST` when the
+  isolated home contains live authentication; the capture must remain local.
 - The probe turn fails after capture — ChatGPT tokens lack the
   `api.responses.write` scope at `api.openai.com`, and Codex retries a few
   times before giving up. The ranking is already captured on the first POST.
@@ -61,16 +77,10 @@ Use current Codex behavior where it differs from this reference.
 
 ## Re-measure
 
-- Start another fresh chat and run `/status` using the same model and surface.
-- Compare the reported capacity and remaining context with the baseline.
-
-## Follow-up questions
-
-When Codex subagents are available, delegate bounded questions about Codex
-configuration or loading behavior to a read-only research subagent. Ask it to
-return evidence and relevant documentation to the main audit. Keep
-recommendation judgment, user approval, and configuration changes in the main
-session.
+- Repeat the same gain metric using the same model and surface. Rerun the shell
+  measurement when that established the baseline; if the baseline came from
+  `/status`, start another fresh chat and run `/status` again.
+- Compare the result with the baseline using the same reported fields.
 
 ## Current documentation
 
