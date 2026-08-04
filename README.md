@@ -4,6 +4,11 @@ Portable Agent Skills by Lorenzo Germini, accompanying `germinai` articles.
 
 ## Drop the Bloat
 
+Accompanies [Drop the
+Bloat](https://lorenzogermini.substack.com/p/drop-the-bloat) (2026-08-04): a
+field note on cutting my Claude Code setup's starting context from roughly 35K
+tokens to about 13K, and deciding what still earns its place.
+
 `drop-the-bloat` runs a one-shot audit of persistent Claude Code or Codex
 context. It measures a fresh-session baseline itself where it has shell access
 (headless `claude -p` or `codex exec --json`; `/context all` and `/status`
